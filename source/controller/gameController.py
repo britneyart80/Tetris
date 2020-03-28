@@ -3,14 +3,15 @@ import pygame
 # controller for a game of Tetris
 class GameController:
 
-    def __init__(self, model, view, columns, rows):
-        self.game = model
+    def __init__(self, gameboard, view, columns, rows):
+        self.gameboard = gameboard
         self.view = view
         self.gameOver = False
 
     def playGame(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                quit()
-            self.view.render()
+        while not self.gameboard.isGameOver():
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+                self.view.renderTetris()

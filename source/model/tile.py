@@ -1,5 +1,5 @@
-# a game board tile
 
+# a game board tile
 class Tile:
 
     # initializes a tile

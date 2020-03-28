@@ -3,14 +3,16 @@ from source.view.gameView import GameView
 from source.model.game import Game
 from source.controller.gameController import GameController
 from source.utils.enums.difficulty import Difficulty
+from source.utils.variables import Configs
 
 def main():
-    columns = 10
-    rows = 20
-    name = "Brit"
-    game = Game(Difficulty.BEGINNER, columns, rows)
-    gameView = GameView(name, game, columns, rows)
-    gameController = GameController(game, gameView, columns, rows)
+    columns = Configs.columns
+    rows = Configs.rows
+    name = Configs.name
+    blockSize = Configs.blockSize
+    gameboard = Game(Difficulty.BEGINNER, columns, rows)
+    gameView = GameView(name, gameboard, columns, rows)
+    gameController = GameController(gameboard, gameView, columns, rows)
     while True:
         gameController.playGame()
 

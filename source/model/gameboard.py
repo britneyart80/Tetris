@@ -17,6 +17,7 @@ class Gameboard:
         self.rows = rows
         self.gameTiles = self.generateTiles(columns, rows)
         self.score = 0
+        self.gameover = False
 
     # generates the tiles on the board
     # @param columns: number of cols to generate tiles for
@@ -29,6 +30,9 @@ class Gameboard:
                 column.append(Tile(c, r))
             tiles.append(column)
         return tiles
+
+    def isGameOver(self):
+        return self.gameover
 
 
 
