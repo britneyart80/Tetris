@@ -1,6 +1,7 @@
 import pygame
 from source.view.gameView import GameView
 from source.model.game import Game
+from source.model.sidebar import Sidebar
 from source.controller.gameController import GameController
 from source.utils.enums.difficulty import Difficulty
 from source.utils.variables import Configs
@@ -11,7 +12,8 @@ def main():
     name = Configs.name
     blockSize = Configs.blockSize
     gameboard = Game(Difficulty.BEGINNER, columns, rows)
-    gameView = GameView(name, gameboard, columns, rows)
+    sidebar = Sidebar()
+    gameView = GameView(name, gameboard, sidebar, columns, rows)
     gameController = GameController(gameboard, gameView, columns, rows)
     while True:
         gameController.playGame()
