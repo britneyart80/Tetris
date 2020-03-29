@@ -53,8 +53,8 @@ class GameView:
     # draw the current active piece on the board
     def drawCurrentPiece(self):
         position = self.gameboard.getActiveCoord()
-        activePiece = self.gameboard.getActivePiece()
-        self.drawTetromino(activePiece, position)
+        activePieceMatrix = self.gameboard.getActivePieceMatrix()
+        self.drawTetromino(activePieceMatrix, position)
 
     # draws sidebar
     def drawSidebar(self):
@@ -68,7 +68,7 @@ class GameView:
         # draw up next pieces
         upNext = self.sidebar.upNext
         for i in range(3):
-            tetromino = upNext[i]
+            tetromino = upNext[i].getMatrix()
             self.drawSidebarTetromino(i, tetromino)
 
         # SIDEBAR TEXT --------------------
@@ -93,7 +93,7 @@ class GameView:
              Configs.sidebarBlockSize * 6)
         )
         if self.gameboard.getHold():
-            held = self.gameboard.getHold()
+            held = self.gameboard.getHold().getMatrix()
             for r in range(4):
                 for c in range(4):
                     dx = self.sidebar_dx + Configs.blockSize + (c * Configs.sidebarBlockSize)

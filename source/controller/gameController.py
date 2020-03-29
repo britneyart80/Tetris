@@ -31,13 +31,24 @@ class GameController:
                         if event.key == pygame.K_ESCAPE:
                             self.gameboard.pause()
                             self.paused = True
-                            # if key pressed to swap hold
+                        # if key pressed, swap hold with active piece
                         if event.key == pygame.K_f:
                             if self.gameboard.getHold():
                                 self.gameboard.updateHold()
                             else:
                                 firstSwap = self.sidebar.update()
                                 self.gameboard.updateHold(firstSwap)
+                        # directional
+                        if event.key == pygame.K_LEFT:
+                            self.gameboard.moveInDirection("left")
+                        if event.key == pygame.K_RIGHT:
+                            self.gameboard.moveInDirection("right")
+                        if event.key == pygame.K_DOWN:
+                            self.gameboard.moveInDirection("down")
+                        if event.key == pygame.K_a:
+                            self.gameboard.rotateActive("left")
+                        if event.key == pygame.K_d:
+                            self.gameboard.rotateActive("right")
                 self.view.renderTetris()
 
             else:

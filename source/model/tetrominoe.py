@@ -1,5 +1,4 @@
-import random
-# class for creating tetrominoes
+# class for a Tetromino
 class Tetrominoe:
     tetrominoes = [
         #LINE-SHAPE
@@ -193,7 +192,22 @@ class Tetrominoe:
         ]
     ]
 
-    def getRandomTetromino(self):
-        type = random.randint(0, 6)
-        orientation = random.randint(0, 3)
-        return self.tetrominoes[type][orientation]
+    def __init__(self, type, rotation):
+        self.tetromino = self.tetrominoes[type][rotation]
+        self.type = type
+        self.rotation = rotation
+
+    def getMatrix(self):
+        return self.tetromino
+
+    def getType(self):
+        return self.type
+
+    def getRotation(self):
+        return self.rotation
+
+    def transformTetromino(self, type, rotation):
+        self.tetromino = self.tetrominoes[type][rotation]
+        self.type = type
+        self.rotation = rotation
+        return self

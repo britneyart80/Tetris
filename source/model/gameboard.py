@@ -1,5 +1,5 @@
-from source.utils.enums.difficulty import Difficulty
-from source.utils.tetrominoe import Tetrominoe
+from source.utils.gameUtils import GameUtils
+import random
 
 # model for Tetris game board
 class Gameboard:
@@ -16,10 +16,26 @@ class Gameboard:
         self.rows = rows
         self.score = 0
         self.gameover = False
-        self.active = Tetrominoe().getRandomTetromino()
+        self.active = GameUtils().getRandomTetromino()
         self.activeCoord = [4, 0]
         self.paused = False
         self.hold = None
+
+    def moveInDirection(self, direction):
+        if (direction == "left"):
+            self.activeCoord = [self.activeCoord[0] - 1, self.activeCoord[1]]
+        if (direction == "right"):
+            self.activeCoord = [self.activeCoord[0] + 1, self.activeCoord[1]]
+        if (direction == "down"):
+            self.activeCoord = [self.activeCoord[0], self.activeCoord[1] + 1]
+
+    def rotateActive(self, direction):
+        typeIndex = self.active.getType()
+        rotationIndex = self.active.getRotation()
+        if direction == "right":
+            self.active = self.active.transformTetromino(typeIndex, (rotationIndex + 1) % 4)
+        if direction == "left":
+            self.active = self.active.transformTetromino(typeIndex, (rotationIndex - 1) % 4)
 
     # moves all movable blocks down on clock tick
     def moveDown(self):
@@ -30,8 +46,8 @@ class Gameboard:
         return self.activeCoord
 
     # retrieves the current active piece
-    def getActivePiece(self):
-        return self.active
+    def getActivePieceMatrix(self):
+        return self.active.getMatrix()
 
     # pause the game
     def pause(self):

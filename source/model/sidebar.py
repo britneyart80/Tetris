@@ -1,4 +1,4 @@
-from source.utils.tetrominoe import Tetrominoe
+from source.utils.gameUtils import GameUtils
 
 # A sidebar for menu and next pieces
 class Sidebar:
@@ -12,12 +12,12 @@ class Sidebar:
     def generateUpNext(self):
         upNext = []
         for num in range(3):
-            upNext.append(Tetrominoe().getRandomTetromino())
+            upNext.append(GameUtils().getRandomTetromino())
         return upNext
 
     # removes first tetrominoe in the list and adds a new one
     def update(self):
-        self.upNext.append(Tetrominoe().getRandomTetromino())
+        self.upNext.append(GameUtils().getRandomTetromino())
         return self.upNext.pop(0)
 
 
