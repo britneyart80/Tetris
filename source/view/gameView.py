@@ -25,8 +25,7 @@ class GameView:
         display.fill((0, 0, 0))
 
     # draws the tetromino in the appropriate upNext slot
-    def drawTetromino(self, index, tetromino, isSidebar):
-       if isSidebar:
+    def drawSidebarTetromino(self, index, tetromino):
             for r in range(4):
                 for c in range(4):
                     dx = self.sidebar_dx + Configs.blockSize + (c * Configs.sidebarBlockSize)
@@ -37,6 +36,25 @@ class GameView:
                             UIVariables.tetrominoColors[tetromino[r][c] - 1],
                             (dx + 1, dy + 1, Configs.sidebarBlockSize - 2, Configs.sidebarBlockSize - 2)
                         )
+
+    # draw the tetromino given
+    def drawTetromino(self, tetromino, coord):
+        for r in range(4):
+            for c in range(4):
+                dx = coord[0] * Configs.blockSize + (c * Configs.blockSize) + 2
+                dy = coord[1] * Configs.blockSize + (r * Configs.blockSize) + 2
+                if tetromino[r][c] != 0:
+                    pygame.draw.rect(
+                            self.gameDisplay,
+                            UIVariables.tetrominoColors[tetromino[r][c] - 1],
+                            (dx + 2, dy + 2, Configs.blockSize - 4, Configs.blockSize - 4)
+                    )
+
+    # draw the current active piece on the board
+    def drawCurrentPiece(self):
+        position = self.gameboard.getActiveCoord()
+        activePiece = self.gameboard.getActivePiece()
+        self.drawTetromino(activePiece, position)
 
     # draws sidebar
     def drawSidebar(self):
@@ -51,7 +69,7 @@ class GameView:
         upNext = self.sidebar.upNext
         for i in range(3):
             tetromino = upNext[i]
-            self.drawTetromino(i, tetromino, True)
+            self.drawSidebarTetromino(i, tetromino)
 
         # SIDEBAR TEXT --------------------
         # TETRIS title
@@ -72,7 +90,7 @@ class GameView:
             (self.sidebar_dx + Configs.sidebarBlockSize / 2,
              Configs.sidebarBlockSize * 23,
              Configs.sidebarBlockSize * 6,
-             Configs.sidebarBlockSize * 5)
+             Configs.sidebarBlockSize * 6)
         )
         if self.gameboard.getHold():
             held = self.gameboard.getHold()
@@ -92,9 +110,9 @@ class GameView:
         scoreNum = self.gameboard.getScore()
         scoreNumText = UIVariables.fontTitle.render(str(scoreNum), 1, UIVariables.lightGray)
         self.gameDisplay.blit(scoreText,
-                              (self.sidebar_dx + (Configs.sidebarBlockSize * 2), Configs.sidebarBlockSize * 29))
+                              (self.sidebar_dx + (Configs.sidebarBlockSize * 2), Configs.sidebarBlockSize * 30))
         self.gameDisplay.blit(scoreNumText,
-                              (self.sidebar_dx + (Configs.sidebarBlockSize * 3), Configs.sidebarBlockSize * 30.5))
+                              (self.sidebar_dx + (Configs.sidebarBlockSize * 3), Configs.sidebarBlockSize * 31.5))
 
 
 
@@ -118,10 +136,11 @@ class GameView:
             pauseScreen = pygame.Surface((Configs.gameboardWidth + 4, self.displayHeight)).convert_alpha()
             pauseScreen.fill((255, 255, 255, 230))
             self.gameDisplay.blit(pauseScreen, (0, 0))
-            self.gameDisplay.blit(pauseText, (Configs.blockSize * 2.2, self.displayHeight / 2.2))
+            self.gameDisplay.blit(pauseText, (Configs.blockSize * 2.2, self.displayHeight / 2.3))
         else:
             self.clear()
             self.drawSidebar()
             self.drawGameboard()
+            self.drawCurrentPiece()
         pygame.display.update()
 

@@ -1,6 +1,5 @@
 from source.utils.enums.difficulty import Difficulty
 from source.utils.tetrominoe import Tetrominoe
-from source.model.tile import Tile
 
 # model for Tetris game board
 class Gameboard:
@@ -9,31 +8,30 @@ class Gameboard:
     # @param gameMode: the difficulty of the game of type DIFFICULTY (enum)
     # @param columns: number of cols in the game
     # @param rows: number of rows in the game
-    # gameTiles: the game tiles on the board
     # score: current score of the game
     # isGameOver: boolean to check game over
     def __init__(self, gameMode, columns, rows):
         self.gameMode = gameMode
         self.columns = columns
         self.rows = rows
-        self.gameTiles = self.generateTiles(columns, rows)
         self.score = 0
         self.gameover = False
-        self.currentPiece = Tetrominoe().getRandomTetromino()
+        self.active = Tetrominoe().getRandomTetromino()
+        self.activeCoord = [4, 0]
         self.paused = False
         self.hold = None
 
-    # generates the tiles on the board
-    # @param columns: number of cols to generate tiles for
-    # @param rows: number of rows to generate tiles for
-    def generateTiles(self, columns, rows):
-        tiles = []
-        for c in range(columns):
-            column = []
-            for r in range(rows):
-                column.append(Tile(c, r))
-            tiles.append(column)
-        return tiles
+    # moves all movable blocks down on clock tick
+    def moveDown(self):
+        self.activeCoord = [self.activeCoord[0], self.activeCoord[1] + 1]
+
+    # retrieves the current position of the active piece
+    def getActiveCoord(self):
+        return self.activeCoord
+
+    # retrieves the current active piece
+    def getActivePiece(self):
+        return self.active
 
     # pause the game
     def pause(self):
@@ -48,19 +46,16 @@ class Gameboard:
         return self.score
 
     # updates the current hold
-    def updateHold(self, replace=False):
-        # if specified replace hold, replace hold with that
-        if replace:
-            self.hold = replace
-            print("replace")
+    def updateHold(self, firstSwap=False):
+        # if it is the first swap, put active in hold and take from up next
+        if firstSwap:
+            self.hold = self.active
+            self.active = firstSwap
         # otherwise swap the current hold with the current piece
         else:
-            print("swap")
-            print(self.currentPiece)
             temp = self.hold
-            self.hold = self.currentPiece
-            self.currentPiece = temp
-
+            self.hold = self.active
+            self.active = temp
 
     # gets the current hold
     def getHold(self):

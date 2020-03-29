@@ -11,6 +11,7 @@ class Configs:
     gameboardWidth = blockSize * columns
     sidebarBlockSize = blockSize / 2
     sidebarWidth = blockSize * 3 + math.floor(sidebarBlockSize)
+    fps = 30
 
 class UIVariables:
     fontPause = pygame.font.Font("./utils/fonts/OpenSans-Bold.ttf", math.floor(Configs.blockSize * 1.5))

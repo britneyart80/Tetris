@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+from source.utils.variables import Configs
 
 # controller for a game of Tetris
 class GameController:
@@ -9,32 +10,35 @@ class GameController:
         self.view = view
         self.sidebar = sidebar
         self.gameOver = False
+        self.paused = False
+        self.fps = Configs.fps
 
     def playGame(self):
+
+        moveDown = pygame.USEREVENT + 1
+        pygame.time.set_timer(moveDown, 1000)
+        # while the game is not over yet
         while not self.gameboard.isGameOver():
-            paused = False
-            if not paused:
-                self.view.renderTetris()
+            if not self.paused:
                 for event in pygame.event.get():
+                    if event.type == moveDown:
+                        self.gameboard.moveDown()
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         quit()
                     if event.type == pygame.KEYDOWN:
                         # pause the game on escape
                         if event.key == pygame.K_ESCAPE:
-                            self.sidebar.update()
                             self.gameboard.pause()
-                            paused = True
+                            self.paused = True
                             # if key pressed to swap hold
                         if event.key == pygame.K_f:
                             if self.gameboard.getHold():
-                                print("first")
                                 self.gameboard.updateHold()
                             else:
-                                print("Second")
-                                newhold = self.sidebar.update()
-                                self.gameboard.updateHold(newhold)
-                        self.view.renderTetris()
+                                firstSwap = self.sidebar.update()
+                                self.gameboard.updateHold(firstSwap)
+                self.view.renderTetris()
 
             else:
                 for event in pygame.event.get():
@@ -44,9 +48,8 @@ class GameController:
                     if event.type == pygame.KEYDOWN:
                         # pause the game on escape
                         if event.key == pygame.K_ESCAPE:
-                            self.sidebar.update()
                             self.gameboard.pause()
-                            paused = False
+                            self.paused = False
                         self.view.renderTetris()
 
                 self.view.renderTetris()
