@@ -6,7 +6,7 @@ pygame.init()
 class Configs:
     columns = 10
     rows = 20
-    blockSize = 35
+    blockSize = 40
     name = "Brit"
     gameboardWidth = blockSize * columns
     sidebarBlockSize = blockSize / 2

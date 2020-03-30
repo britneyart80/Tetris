@@ -22,7 +22,7 @@ class GameController:
             if not self.paused:
                 for event in pygame.event.get():
                     if event.type == moveDown:
-                        self.gameboard.moveDown()
+                        self.gameboard.moveInDirection("down")
                     if event.type == pygame.QUIT:
                         pygame.quit()
                         quit()
@@ -33,11 +33,7 @@ class GameController:
                             self.paused = True
                         # if key pressed, swap hold with active piece
                         if event.key == pygame.K_f:
-                            if self.gameboard.getHold():
-                                self.gameboard.updateHold()
-                            else:
-                                firstSwap = self.sidebar.update()
-                                self.gameboard.updateHold(firstSwap)
+                            self.gameboard.updateHold()
                         # directional
                         if event.key == pygame.K_LEFT:
                             self.gameboard.moveInDirection("left")
@@ -49,6 +45,10 @@ class GameController:
                             self.gameboard.rotateActive("left")
                         if event.key == pygame.K_d:
                             self.gameboard.rotateActive("right")
+
+                if self.gameboard.needsTetromino():
+                    next = self.sidebar.update()
+                    self.gameboard.setActive(next)
                 self.view.renderTetris()
 
             else:

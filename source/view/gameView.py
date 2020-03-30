@@ -118,13 +118,17 @@ class GameView:
 
     # draws the game board with tiles
     def drawGameboard(self):
-        for c in range(self.columns):
-            for r in range(self.rows):
+        for r in range(self.rows):
+            for c in range(self.columns):
+                currentBlockValue = self.gameboard.getBlock(r, c)
+                color = UIVariables.gray
+                if currentBlockValue != 0:
+                    color = UIVariables.tetrominoColors[currentBlockValue - 1]
                 dx = c * Configs.blockSize + 2
                 dy = r * Configs.blockSize + 2
                 pygame.draw.rect(
                     self.gameDisplay,
-                    UIVariables.gray,
+                    color,
                     (dx + 2, dy + 2, Configs.blockSize - 4, Configs.blockSize - 4))
 
     # renders everything on the game board

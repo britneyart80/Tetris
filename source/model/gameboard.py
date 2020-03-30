@@ -16,19 +16,84 @@ class Gameboard:
         self.rows = rows
         self.score = 0
         self.gameover = False
+        self.gameTiles = self.generateTiles()
         self.active = GameUtils().getRandomTetromino()
-        self.activeCoord = [4, 0]
+        self.activeCoord = [3, 0]
         self.paused = False
         self.hold = None
 
-    def moveInDirection(self, direction):
-        if (direction == "left"):
-            self.activeCoord = [self.activeCoord[0] - 1, self.activeCoord[1]]
-        if (direction == "right"):
-            self.activeCoord = [self.activeCoord[0] + 1, self.activeCoord[1]]
-        if (direction == "down"):
-            self.activeCoord = [self.activeCoord[0], self.activeCoord[1] + 1]
+    #generates the game board tiles
+    def generateTiles(self):
+        gameboard = []
+        for r in range(self.rows):
+            row = []
+            for c in range(self.columns):
+                row.append(0)
+            gameboard.append(row)
+        return gameboard
 
+    # gets the current game board block
+    def getBlock(self, row, column):
+        return self.gameTiles[row][column]
+
+    # returns if the game board needs a new active tetromino
+    def needsTetromino(self):
+        return self.active is None
+
+    # replaces the current active piece
+    def setActive(self, tetromino):
+        print("Active set to:")
+        print(tetromino)
+        self.active = tetromino
+
+    # places the Tetromino onto the gameboard
+    def placeTetromino(self):
+        active = self.active.getMatrix()
+        for r in range(4):
+            for c in range(4):
+                curr = active[r][c]
+                if curr != 0:
+                    row = self.gameTiles[r + self.activeCoord[1]]
+                    row[c + self.activeCoord[0]] = curr
+        self.activeCoord = [3, 0]
+        self.active = None
+
+    # determines if the current piece can move in the given direction
+    def canMove(self, direction):
+        active = self.active.getMatrix()
+        for r in range(4):
+            for c in range(4):
+                curr = active[r][c]
+                if direction == "right":
+                    if curr != 0 and (
+                            (c + self.activeCoord[0] >= 9) or
+                            (curr + self.gameTiles[r + self.activeCoord[1]][c + self.activeCoord[0] + 1] > curr)):
+                        return False
+                elif direction == "left":
+                    if curr != 0 and (
+                            (c + self.activeCoord[0] - 1 < 0) or
+                            (curr + self.gameTiles[r + self.activeCoord[1]][c + self.activeCoord[0] - 1] > curr)):
+                        return False
+                elif direction == "down":
+                    if curr != 0 and (
+                            (r + self.activeCoord[1] >= 19) or
+                            (curr + self.gameTiles[r + self.activeCoord[1] + 1][c + self.activeCoord[0]] > curr)):
+                        self.placeTetromino()
+                        return False
+
+        return True
+
+    # move current piece in the direction given
+    def moveInDirection(self, direction):
+        if self.canMove(direction):
+            if (direction == "left"):
+                self.activeCoord = [self.activeCoord[0] - 1, self.activeCoord[1]]
+            if (direction == "right"):
+                self.activeCoord = [self.activeCoord[0] + 1, self.activeCoord[1]]
+            if (direction == "down"):
+                self.activeCoord = [self.activeCoord[0], self.activeCoord[1] + 1]
+
+    # rotate the active piece in direction given
     def rotateActive(self, direction):
         typeIndex = self.active.getType()
         rotationIndex = self.active.getRotation()
@@ -62,13 +127,7 @@ class Gameboard:
         return self.score
 
     # updates the current hold
-    def updateHold(self, firstSwap=False):
-        # if it is the first swap, put active in hold and take from up next
-        if firstSwap:
-            self.hold = self.active
-            self.active = firstSwap
-        # otherwise swap the current hold with the current piece
-        else:
+    def updateHold(self):
             temp = self.hold
             self.hold = self.active
             self.active = temp
