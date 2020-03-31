@@ -37,24 +37,21 @@ class GameView:
                             (dx + 1, dy + 1, Configs.sidebarBlockSize - 2, Configs.sidebarBlockSize - 2)
                         )
 
-    # draw the tetromino given
-    def drawTetromino(self, tetromino, coord):
-        for r in range(4):
-            for c in range(4):
-                dx = coord[0] * Configs.blockSize + (c * Configs.blockSize) + 2
-                dy = coord[1] * Configs.blockSize + (r * Configs.blockSize) + 2
-                if tetromino[r][c] != 0:
-                    pygame.draw.rect(
+    # draw the current active piece on the board
+    def drawCurrentPiece(self):
+        coord = self.gameboard.getActiveCoord()
+        tetromino = self.gameboard.getActivePieceMatrix()
+        if not self.gameboard.isGameOver():
+            for r in range(4):
+                for c in range(4):
+                    dx = coord[0] * Configs.blockSize + (c * Configs.blockSize) + 2
+                    dy = coord[1] * Configs.blockSize + (r * Configs.blockSize) + 2
+                    if tetromino[r][c] != 0:
+                        pygame.draw.rect(
                             self.gameDisplay,
                             UIVariables.tetrominoColors[tetromino[r][c] - 1],
                             (dx + 2, dy + 2, Configs.blockSize - 4, Configs.blockSize - 4)
-                    )
-
-    # draw the current active piece on the board
-    def drawCurrentPiece(self):
-        position = self.gameboard.getActiveCoord()
-        activePieceMatrix = self.gameboard.getActivePieceMatrix()
-        self.drawTetromino(activePieceMatrix, position)
+                        )
 
     # draws sidebar
     def drawSidebar(self):
@@ -140,8 +137,8 @@ class GameView:
         gameoverScreen = pygame.Surface((Configs.gameboardWidth + 4, self.displayHeight))
         gameoverScreen.fill((255, 255, 255, 230))
         self.gameDisplay.blit(gameoverScreen, (0, 0))
-        self.gameDisplay.blit(gameoverText, (Configs.blockSize * 1.5, self.displayHeight / 2.3))
-        self.gameDisplay.blit(scoreText, (Configs.blockSize * 2.2, self.displayHeight / 1.8))
+        self.gameDisplay.blit(gameoverText, (Configs.blockSize * 1, self.displayHeight / 2.3))
+        self.gameDisplay.blit(scoreText, (Configs.blockSize * 1, self.displayHeight / 1.8))
 
     # renders everything on the game board
     def renderTetris(self):

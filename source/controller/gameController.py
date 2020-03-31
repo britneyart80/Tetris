@@ -63,7 +63,7 @@ class GameController:
                 # moving the tetris piece
                 keys = pygame.key.get_pressed()
                 ms = pygame.time.get_ticks()
-                if ms > self.lastMove + 90:
+                if ms > self.lastMove + 110:
                     if keys[pygame.K_LEFT]:
                         self.gameboard.moveInDirection("left")
                     if keys[pygame.K_RIGHT]:

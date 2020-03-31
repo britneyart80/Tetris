@@ -18,7 +18,7 @@ class Gameboard:
         self.gameOver = False
         self.gameTiles = self.generateTiles()
         self.active = GameUtils().getRandomTetromino()
-        self.activeCoord = [3, 0]
+        self.activeCoord = [3, -1]
         self.paused = False
         self.usedHold = False;
         self.hold = None
@@ -84,11 +84,11 @@ class Gameboard:
                 if curr != 0:
                     row = self.gameTiles[r + self.activeCoord[1]]
                     row[c + self.activeCoord[0]] = curr
-        self.activeCoord = [3, 0]
+        self.activeCoord = [3, -1]
         self.active = None
         self.usedHold = False;
-        self.checkCleared()
         self.score += self.level
+        self.checkCleared()
 
     # determines if the current piece can move in the given direction
     def canMove(self, direction):
@@ -180,7 +180,7 @@ class Gameboard:
         self.gameOver = False
         self.gameTiles = self.generateTiles()
         self.active = GameUtils().getRandomTetromino()
-        self.activeCoord = [3, 0]
+        self.activeCoord = [3, -1]
         self.paused = False
         self.usedHold = False;
         self.hold = None
@@ -195,7 +195,7 @@ class Gameboard:
             temp = self.hold
             self.hold = self.active
             self.active = temp
-            self.activeCoord = [3, 0]
+            self.activeCoord = [3, -1]
         self.usedHold = True;
 
     # gets the current hold
