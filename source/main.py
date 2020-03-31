@@ -14,8 +14,8 @@ def main():
     sidebar = Sidebar()
     gameView = GameView(name, gameboard, sidebar, columns, rows)
     gameController = GameController(gameboard, gameView, sidebar, columns, rows)
-    while True:
-        gameController.playGame()
+    # play the game
+    gameController.playGame()
 
 def start_game():
     pygame.mixer.pre_init(channels=32)

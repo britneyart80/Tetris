@@ -1,6 +1,5 @@
 from source.utils.gameUtils import GameUtils
-import random
-
+from source.utils.variables import Configs
 # model for Tetris game board
 class Gameboard:
 
@@ -11,16 +10,19 @@ class Gameboard:
     # score: current score of the game
     # isGameOver: boolean to check game over
     def __init__(self, gameMode, columns, rows):
+        self.level = 1
         self.gameMode = gameMode
         self.columns = columns
         self.rows = rows
         self.score = 0
-        self.gameover = False
+        self.gameOver = False
         self.gameTiles = self.generateTiles()
         self.active = GameUtils().getRandomTetromino()
         self.activeCoord = [3, 0]
         self.paused = False
+        self.usedHold = False;
         self.hold = None
+        self.lastMove = 0
 
     #generates the game board tiles
     def generateTiles(self):
@@ -42,9 +44,36 @@ class Gameboard:
 
     # replaces the current active piece
     def setActive(self, tetromino):
-        print("Active set to:")
-        print(tetromino)
         self.active = tetromino
+
+    # calculates the score added
+    def updateScore(self, rowCount):
+        self.score += rowCount * 100 * self.level
+
+    # checks which parts of the board can be cleared
+    def checkCleared(self):
+        fullRow = []
+        for r in range(self.rows):
+            isFull = True
+            for c in range(self.columns):
+                if self.gameTiles[r][c] == 0:
+                    isFull = False
+                    break;
+            if isFull:
+                fullRow.append(True)
+            else:
+                fullRow.append(False)
+
+        rowCount = 0
+        for i in range(len(fullRow)):
+            isFullRow = fullRow[i]
+            if isFullRow:
+                rowCount += 1
+                self.gameTiles.pop(i)
+                self.gameTiles.insert(0, GameUtils().newRow())
+        self.updateScore(rowCount)
+
+
 
     # places the Tetromino onto the gameboard
     def placeTetromino(self):
@@ -57,6 +86,9 @@ class Gameboard:
                     row[c + self.activeCoord[0]] = curr
         self.activeCoord = [3, 0]
         self.active = None
+        self.usedHold = False;
+        self.checkCleared()
+        self.score += self.level
 
     # determines if the current piece can move in the given direction
     def canMove(self, direction):
@@ -93,13 +125,29 @@ class Gameboard:
             if (direction == "down"):
                 self.activeCoord = [self.activeCoord[0], self.activeCoord[1] + 1]
 
+    # determines if the piece can be rotated
+    def canRotate(self, direction):
+        for r in range(4):
+            for c in range(4):
+                if direction == "right":
+                    nextRotation = GameUtils().getTetromino(self.active.getType(), (self.active.getRotation() + 1) % 4)
+                if direction == "left":
+                    nextRotation = GameUtils().getTetromino(self.active.getType(), (self.active.getRotation() - 1) % 4)
+
+                curr = nextRotation[r][c]
+                if curr != 0 and (
+                        (c + self.activeCoord[0] > 9) or (c + self.activeCoord[0] < 0) or
+                        (curr + self.gameTiles[r + self.activeCoord[1]][c + self.activeCoord[0]] > curr)):
+                    return False
+        return True
+
     # rotate the active piece in direction given
     def rotateActive(self, direction):
         typeIndex = self.active.getType()
         rotationIndex = self.active.getRotation()
-        if direction == "right":
+        if direction == "right" and self.canRotate("right"):
             self.active = self.active.transformTetromino(typeIndex, (rotationIndex + 1) % 4)
-        if direction == "left":
+        if direction == "left" and self.canRotate("left"):
             self.active = self.active.transformTetromino(typeIndex, (rotationIndex - 1) % 4)
 
     # moves all movable blocks down on clock tick
@@ -120,7 +168,22 @@ class Gameboard:
 
     # returns if the game is over
     def isGameOver(self):
-        return self.gameover
+        for c in range(4):
+            if self.gameTiles[0][c + 3] != 0:
+                self.gameOver = True
+                return True
+        return False
+
+    # refreshes the gameboard
+    def newGame(self):
+        self.score = 0
+        self.gameOver = False
+        self.gameTiles = self.generateTiles()
+        self.active = GameUtils().getRandomTetromino()
+        self.activeCoord = [3, 0]
+        self.paused = False
+        self.usedHold = False;
+        self.hold = None
 
     # gets the current score of the game
     def getScore(self):
@@ -128,9 +191,12 @@ class Gameboard:
 
     # updates the current hold
     def updateHold(self):
+        if not self.usedHold:
             temp = self.hold
             self.hold = self.active
             self.active = temp
+            self.activeCoord = [3, 0]
+        self.usedHold = True;
 
     # gets the current hold
     def getHold(self):

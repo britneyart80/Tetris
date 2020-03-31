@@ -112,7 +112,7 @@ class GameView:
         self.gameDisplay.blit(scoreText,
                               (self.sidebar_dx + (Configs.sidebarBlockSize * 2), Configs.sidebarBlockSize * 30))
         self.gameDisplay.blit(scoreNumText,
-                              (self.sidebar_dx + (Configs.sidebarBlockSize * 3), Configs.sidebarBlockSize * 31.5))
+                              (self.sidebar_dx + (Configs.sidebarBlockSize * 2), Configs.sidebarBlockSize * 31.5))
 
 
 
@@ -131,12 +131,26 @@ class GameView:
                     color,
                     (dx + 2, dy + 2, Configs.blockSize - 4, Configs.blockSize - 4))
 
+    # draw game over
+    def drawGameOver(self):
+        self.drawSidebar()
+        self.drawGameboard()
+        gameoverText = UIVariables.fontBold.render("GAMEOVER", 1, (0, 0, 0))
+        scoreText = UIVariables.fontReg.render("SCORE: " + str(self.gameboard.getScore()), 1, (0, 0, 0))
+        gameoverScreen = pygame.Surface((Configs.gameboardWidth + 4, self.displayHeight))
+        gameoverScreen.fill((255, 255, 255, 230))
+        self.gameDisplay.blit(gameoverScreen, (0, 0))
+        self.gameDisplay.blit(gameoverText, (Configs.blockSize * 1.5, self.displayHeight / 2.3))
+        self.gameDisplay.blit(scoreText, (Configs.blockSize * 2.2, self.displayHeight / 1.8))
+
     # renders everything on the game board
     def renderTetris(self):
-        if self.gameboard.paused:
+        if self.gameboard.isGameOver():
+            self.drawGameOver()
+        elif self.gameboard.paused:
             self.drawSidebar()
             self.drawGameboard()
-            pauseText = UIVariables.fontPause.render("PAUSED", 1, (0, 0, 0))
+            pauseText = UIVariables.fontBold.render("PAUSED", 1, (0, 0, 0))
             pauseScreen = pygame.Surface((Configs.gameboardWidth + 4, self.displayHeight)).convert_alpha()
             pauseScreen.fill((255, 255, 255, 230))
             self.gameDisplay.blit(pauseScreen, (0, 0))
@@ -147,4 +161,5 @@ class GameView:
             self.drawGameboard()
             self.drawCurrentPiece()
         pygame.display.update()
+
 
